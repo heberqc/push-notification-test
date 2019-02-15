@@ -23,7 +23,9 @@
 
 // Para hacer pruebas, se puede generar usar las public keys desde el siguiente link:
 // https://web-push-codelab.glitch.me/
-const applicationServerPublicKey = 'BIVT839dAtJqcI0GDroj94bdgfjpL_iOKKXE0IDyOa54UncAgle1n0crCqCYnBljcEngabEGBL0fBFqUGxbTMP0';
+const applicationServerPublicKey =
+  'BFLC04x0AytV6UPLTxBHFtGMlLmmq6Gy-DWvEEu86Bp1POYtvAuQK_LUxlv1iauS6ojsNbVNbz3mfwoGFhJsCQo';
+const subscriptionURL = 'https://fire-node.glitch.me/subscribe';
 
 const pushButton = document.querySelector('.js-push-btn');
 
@@ -67,8 +69,10 @@ function initialiseUI() {
   pushButton.addEventListener('click', function() {
     pushButton.disabled = true;
     if (isSubscribed) {
+      console.log('estaba suscrito');
       unsubscribeUser();
     } else {
+      console.log('no estaba suscrito');
       subscribeUser();
     }
   });
@@ -107,8 +111,16 @@ function updateBtn() {
   pushButton.disabled = false;
 }
 
+function pedirNotificacion() {
+  Notification.requestPermission((status) => {
+    console.log('status:', status);
+  });
+}
+
 function subscribeUser() {
+  console.log('se quiere suscribir al usuario a push manager');
   const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+
   swRegistration.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: applicationServerKey
@@ -149,16 +161,24 @@ function unsubscribeUser() {
 }
 
 function updateSubscriptionOnServer(subscription) {
-  // TODO: Send subscription to application server
-
-  const subscriptionJson = document.querySelector('.js-subscription-json');
-  const subscriptionDetails =
-    document.querySelector('.js-subscription-details');
-
-  if (subscription) {
-    subscriptionJson.textContent = JSON.stringify(subscription);
-    subscriptionDetails.classList.remove('is-invisible');
-  } else {
-    subscriptionDetails.classList.add('is-invisible');
-  }
+    fetch(subscriptionURL, {
+      method: subscription ? 'POST' : 'PUT',
+      body: JSON.stringify(subscription),
+      headers: {
+        'content-type': 'application/json'
+      }
+    })
+    .then(() => {
+      console.log('Se suscribió al usuario.');
+      const subscriptionJson = document.querySelector('.js-subscription-json');
+      const subscriptionDetails =
+        document.querySelector('.js-subscription-details');
+      if (subscription) {
+        subscriptionJson.textContent = JSON.stringify(subscription);
+        subscriptionDetails.classList.remove('is-invisible');
+      } else {
+        subscriptionDetails.classList.add('is-invisible');
+      }
+    })
+    .catch((error) => console.log('Error al suscribir:', error));
 }
