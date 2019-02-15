@@ -82,13 +82,13 @@ function initialiseUI() {
   .then(function(subscription) {
     isSubscribed = !(subscription === null);
 
-    updateSubscriptionOnServer(subscription);
+    // updateSubscriptionOnServer(subscription);
 
-    if (isSubscribed) {
-      console.log('User IS subscribed.');
-    } else {
-      console.log('User is NOT subscribed.');
-    }
+    // if (isSubscribed) {
+    //   console.log('User IS subscribed.');
+    // } else {
+    //   console.log('User is NOT subscribed.');
+    // }
 
     updateBtn();
   });
@@ -161,24 +161,25 @@ function unsubscribeUser() {
 }
 
 function updateSubscriptionOnServer(subscription) {
-    fetch(subscriptionURL, {
-      method: subscription ? 'POST' : 'PUT',
-      body: JSON.stringify(subscription),
-      headers: {
-        'content-type': 'application/json'
-      }
-    })
-    .then(() => {
-      console.log('Se suscribió al usuario.');
-      const subscriptionJson = document.querySelector('.js-subscription-json');
-      const subscriptionDetails =
-        document.querySelector('.js-subscription-details');
-      if (subscription) {
-        subscriptionJson.textContent = JSON.stringify(subscription);
-        subscriptionDetails.classList.remove('is-invisible');
-      } else {
-        subscriptionDetails.classList.add('is-invisible');
-      }
-    })
-    .catch((error) => console.log('Error al suscribir:', error));
+  console.log('subscription:', subscription);
+  fetch(subscriptionURL, {
+    method: subscription ? 'POST' : 'PUT',
+    body: JSON.stringify(subscription),
+    headers: {
+      'content-type': 'application/json'
+    }
+  })
+  .then(() => {
+    console.log('Se suscribió al usuario.');
+    const subscriptionJson = document.querySelector('.js-subscription-json');
+    const subscriptionDetails =
+      document.querySelector('.js-subscription-details');
+    if (subscription) {
+      subscriptionJson.textContent = JSON.stringify(subscription);
+      subscriptionDetails.classList.remove('is-invisible');
+    } else {
+      subscriptionDetails.classList.add('is-invisible');
+    }
+  })
+  .catch((error) => console.log('Error al suscribir:', error));
 }
