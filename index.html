@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="https://code.getmdl.io/1.2.1/material.indigo-pink.min.css">
   <script defer src="https://code.getmdl.io/1.2.1/material.min.js"></script>
   <link rel="stylesheet" href="styles/index.css">
+  <link rel="manifest" href="manifest.json">
 </head>
 
 <body>
@@ -25,6 +26,9 @@
     <p>
       <button onclick="pedirNotificacion()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
         Solicitar mostrar notificaciones
+      </button>
+      <button onclick="suscribirUsuario()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+        Suscribir a firebase
       </button>
       <button disabled class="js-push-btn mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
         Suscribir a mensajes push
@@ -41,7 +45,8 @@
       <pre><code class="js-subscription-json"></code></pre>
     </section>
   </main>
-
+  <script src="https://www.gstatic.com/firebasejs/5.8.3/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.8.3/firebase-messaging.js"></script>
   <script src="scripts/main.js"></script>
 
   <script src="https://code.getmdl.io/1.2.1/material.min.js"></script>

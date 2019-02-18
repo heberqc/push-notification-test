@@ -1,28 +1,3 @@
-/*
-*
-*  Push Notifications codelab
-*  Copyright 2015 Google Inc. All rights reserved.
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      https://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License
-*
-*/
-
-/* eslint-env browser, es6 */
-
-'use strict';
-
-// Para hacer pruebas, se puede generar usar las public keys desde el siguiente link:
-// https://web-push-codelab.glitch.me/
 const applicationServerPublicKey =
   'BFLC04x0AytV6UPLTxBHFtGMlLmmq6Gy-DWvEEu86Bp1POYtvAuQK_LUxlv1iauS6ojsNbVNbz3mfwoGFhJsCQo';
 const subscriptionURL = 'https://fire-node.glitch.me/subscribe';
@@ -31,6 +6,19 @@ const pushButton = document.querySelector('.js-push-btn');
 
 let isSubscribed = false;
 let swRegistration = null;
+
+// Initialize Firebase
+const config = {
+  apiKey: "AIzaSyDPZ6u2-wMDFTrXMP7H7sAjG4S33-sXlIA",
+  authDomain: "pruebawpn.firebaseapp.com",
+  databaseURL: "https://pruebawpn.firebaseio.com",
+  projectId: "pruebawpn",
+  storageBucket: "pruebawpn.appspot.com",
+  messagingSenderId: "612760751599"
+};
+firebase.initializeApp(config);
+
+const messaging = firebase.messaging()
 
 function urlB64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -54,6 +42,8 @@ if ('serviceWorker' in navigator && 'PushManager' in window) {
   .then(function(swReg) {
     console.log('Service Worker is registered', swReg);
 
+    // Registrar el service worker al servicio de messaging firebase
+    messaging.useServiceWorker(swReg);
     swRegistration = swReg;
     initialiseUI();
   })
@@ -62,7 +52,7 @@ if ('serviceWorker' in navigator && 'PushManager' in window) {
   });
 } else {
   console.warn('Push messaging is not supported');
-  pushButton.textContent = 'Push Not Supported';
+  pushButton.textContent = 'Los mensajes Push no están soportados';
 }
 
 function initialiseUI() {
@@ -96,16 +86,16 @@ function initialiseUI() {
 
 function updateBtn() {
   if (Notification.permission === 'denied') {
-    pushButton.textContent = 'Push Messaging Blocked.';
+    pushButton.textContent = 'Mesajes Push bloqueados.';
     pushButton.disabled = true;
     updateSubscriptionOnServer(null);
     return;
   }
 
   if (isSubscribed) {
-    pushButton.textContent = 'Disable Push Messaging';
+    pushButton.textContent = 'Desuscribir a mensajes Push';
   } else {
-    pushButton.textContent = 'Enable Push Messaging';
+    pushButton.textContent = 'Suscribir a mensajes Push';
   }
 
   pushButton.disabled = false;
@@ -114,6 +104,21 @@ function updateBtn() {
 function pedirNotificacion() {
   Notification.requestPermission((status) => {
     console.log('status:', status);
+    updateBtn();
+  });
+}
+
+const suscribirUsuario = () => {
+  messaging.requestPermission()
+  .then(() => {
+    console.log('Recibido permiso.');
+    return messaging.getToken()
+  })
+  .then((token) => {
+    console.log('token:', token)
+  })
+  .catch(function(err) {
+    console.log('No se ha obtenido permiso', err);
   });
 }
 
